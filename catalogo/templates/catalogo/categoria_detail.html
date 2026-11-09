@@ -1,0 +1,35 @@
+{% extends "catalogo/base.html" %}
+
+{% block title %}{{ categoria.nome }} — Instituto de Acesso Legal{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <a
+        href="{% url 'catalogo:home' %}"
+        class="inline-flex items-center gap-2 min-h-[44px] text-blue-700 font-semibold mb-4"
+    >
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+    </a>
+
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ categoria.nome }}</h1>
+    {% if categoria.descricao %}
+        <p class="text-gray-800 mb-6">{{ categoria.descricao }}</p>
+    {% endif %}
+
+    {% if artigos %}
+        <div class="flex flex-col gap-4">
+            {% for artigo in artigos %}
+                <a
+                    href="{% url 'catalogo:artigo_detail' artigo.pk %}"
+                    class="block min-h-[44px] p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-700 hover:shadow-sm transition"
+                >
+                    <h2 class="text-lg font-bold text-gray-900">{{ artigo.titulo }}</h2>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-800">Ainda não há artigos cadastrados nesta categoria.</p>
+    {% endif %}
+</section>
+{% endblock %}

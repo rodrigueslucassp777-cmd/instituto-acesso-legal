@@ -1,0 +1,55 @@
+{% extends "catalogo/base.html" %}
+
+{% block title %}Instituto de Acesso Legal — Conheça seus direitos{% endblock %}
+
+{% block content %}
+<section class="py-8 text-center">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        Conheça seus direitos
+    </h1>
+    <p class="text-gray-800 mb-6">
+        Pesquise abaixo um assunto e leia a explicação em linguagem simples.
+    </p>
+
+    <form action="{% url 'catalogo:busca' %}" method="get" class="max-w-xl mx-auto" role="search">
+        <label for="q" class="sr-only">Buscar um direito ou assunto</label>
+        <div class="flex items-stretch gap-2">
+            <input
+                type="search"
+                id="q"
+                name="q"
+                placeholder="Ex.: férias, aluguel, pensão..."
+                class="flex-1 min-h-[44px] px-4 text-base text-gray-900 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-700"
+                autocomplete="off"
+            >
+            <button
+                type="submit"
+                class="min-h-[44px] min-w-[44px] px-5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800"
+            >
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <span class="hidden sm:inline ml-1">Buscar</span>
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="py-4">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Categorias</h2>
+
+    {% if categorias %}
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {% for categoria in categorias %}
+                <a
+                    href="{% url 'catalogo:categoria_detail' categoria.pk %}"
+                    class="flex flex-col items-center justify-center gap-2 min-h-[44px] p-4 bg-white border border-gray-200 rounded-xl text-center hover:border-blue-700 hover:shadow-sm transition"
+                >
+                    <i class="{{ categoria.icone_url|default:'fa-solid fa-book' }} text-2xl text-blue-700" aria-hidden="true"></i>
+                    <span class="font-semibold text-gray-900">{{ categoria.nome }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-800">Nenhuma categoria cadastrada ainda.</p>
+    {% endif %}
+</section>
+{% endblock %}

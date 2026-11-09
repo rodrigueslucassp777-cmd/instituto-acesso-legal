@@ -1,0 +1,25 @@
+{% extends "catalogo/base.html" %}
+
+{% block title %}{{ artigo.titulo }} — Instituto de Acesso Legal{% endblock %}
+
+{% block content %}
+<article class="py-4">
+    <a
+        href="{% url 'catalogo:categoria_detail' artigo.categoria.pk %}"
+        class="inline-flex items-center gap-2 min-h-[44px] text-blue-700 font-semibold mb-4"
+    >
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+    </a>
+
+    <span class="text-xs font-semibold text-blue-700 uppercase">{{ artigo.categoria.nome }}</span>
+    <h1 class="text-2xl font-bold text-gray-900 mt-1 mb-2">{{ artigo.titulo }}</h1>
+    <p class="text-sm text-gray-800 mb-6">
+        Atualizado em {{ artigo.data_atualizacao|date:"d/m/Y" }}
+    </p>
+
+    <div class="prose text-gray-800 text-base leading-relaxed whitespace-pre-line">
+        {{ artigo.conteudo_simplificado }}
+    </div>
+</article>
+{% endblock %}

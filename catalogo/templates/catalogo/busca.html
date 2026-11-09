@@ -1,0 +1,62 @@
+{% extends "catalogo/base.html" %}
+
+{% block title %}Resultados da busca — Instituto de Acesso Legal{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <a
+        href="{% url 'catalogo:home' %}"
+        class="inline-flex items-center gap-2 min-h-[44px] text-blue-700 font-semibold mb-4"
+    >
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+    </a>
+
+    <form action="{% url 'catalogo:busca' %}" method="get" class="max-w-xl mb-6" role="search">
+        <label for="q" class="sr-only">Buscar um direito ou assunto</label>
+        <div class="flex items-stretch gap-2">
+            <input
+                type="search"
+                id="q"
+                name="q"
+                value="{{ termo }}"
+                class="flex-1 min-h-[44px] px-4 text-base text-gray-900 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-700"
+                autocomplete="off"
+            >
+            <button
+                type="submit"
+                class="min-h-[44px] min-w-[44px] px-5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800"
+            >
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
+
+    {% if termo %}
+        <h1 class="text-lg font-bold text-gray-900 mb-4">
+            Resultados para &ldquo;{{ termo }}&rdquo;
+        </h1>
+    {% endif %}
+
+    {% if resultados %}
+        <div class="flex flex-col gap-4">
+            {% for artigo in resultados %}
+                <a
+                    href="{% url 'catalogo:artigo_detail' artigo.pk %}"
+                    class="block min-h-[44px] p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-700 hover:shadow-sm transition"
+                >
+                    <span class="text-xs font-semibold text-blue-700 uppercase">{{ artigo.categoria.nome }}</span>
+                    <h2 class="text-lg font-bold text-gray-900">{{ artigo.titulo }}</h2>
+                </a>
+            {% endfor %}
+        </div>
+    {% elif termo %}
+        <div class="p-4 bg-yellow-50 border border-yellow-300 rounded-xl text-gray-800" role="alert">
+            <i class="fa-solid fa-circle-info text-yellow-600 mr-2" aria-hidden="true"></i>
+            Não encontramos nenhum resultado para &ldquo;{{ termo }}&rdquo;. Tente usar outras palavras.
+        </div>
+    {% else %}
+        <p class="text-gray-800">Digite um termo na busca acima para encontrar seus direitos.</p>
+    {% endif %}
+</section>
+{% endblock %}
