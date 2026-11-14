@@ -4,7 +4,7 @@ Catálogo web de direitos explicados em linguagem simples, organizados por categ
 
 ## Stack
 
-- Python / Django 5
+- Python / Django 6
 - SQLite (padrão local) ou PostgreSQL (via variáveis de ambiente)
 - `python-decouple` para configuração via `.env`
 - `Unidecode` para busca tolerante a acentos/erros de digitação
