@@ -11,6 +11,18 @@ SECRET_KEY = config("SECRET_KEY", default="django-insecure-dev-key-trocar-em-pro
 DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1", cast=Csv())
 
+# Reforco de seguranca para producao (DEBUG=False). SECURE_SSL_REDIRECT fica
+# desligado por padrao para nao quebrar testes/CI/staging sem TLS proprio;
+# ative explicitamente via env var quando houver HTTPS na frente (ex.: atras
+# de um load balancer ou reverse proxy com certificado).
+if not DEBUG:
+    SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=False, cast=bool)
+    SESSION_COOKIE_SECURE = config("SESSION_COOKIE_SECURE", default=True, cast=bool)
+    CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE", default=True, cast=bool)
+    SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=3600, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
