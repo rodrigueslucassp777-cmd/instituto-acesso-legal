@@ -12,7 +12,14 @@ def _normalizar(texto):
 
 def home(request):
     categorias = Categoria.objects.all()
-    return render(request, "catalogo/home.html", {"categorias": categorias})
+    artigos_destaque = Artigo.objects.select_related("categoria").order_by(
+        "-data_atualizacao"
+    )[:6]
+    return render(
+        request,
+        "catalogo/home.html",
+        {"categorias": categorias, "artigos_destaque": artigos_destaque},
+    )
 
 
 def busca(request):

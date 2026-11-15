@@ -45,6 +45,17 @@ class HomeViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, categoria.nome)
 
+    def test_lista_temas_em_destaque(self):
+        categoria = Categoria.objects.create(nome="Consumidor")
+        artigo = Artigo.objects.create(
+            categoria=categoria,
+            titulo="Garantia estendida",
+            conteudo_simplificado="Conteúdo de exemplo.",
+            palavras_chave="garantia, produto",
+        )
+        response = self.client.get(reverse("catalogo:home"))
+        self.assertContains(response, artigo.titulo)
+
 
 class CategoriaDetailViewTests(TestCase):
     def setUp(self):
