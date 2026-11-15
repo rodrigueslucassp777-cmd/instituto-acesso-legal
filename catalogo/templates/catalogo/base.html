@@ -5,15 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Instituto de Acesso Legal{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#F5F6F3',
+                        ink: '#1C2B26',
+                        brand: { DEFAULT: '#2F6F5E', dark: '#1F4D40', light: '#E5F0EB' },
+                        gold: { DEFAULT: '#A9782D', soft: '#F2E6D2' },
+                        line: '#DEDAD0',
+                    },
+                    fontFamily: {
+                        serif: ['Lora', 'ui-serif', 'Georgia', 'serif'],
+                        sans: ['Public Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-paper text-ink font-sans antialiased min-h-screen flex flex-col">
 
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <header class="bg-paper/95 backdrop-blur border-b border-line sticky top-0 z-10">
         <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-            <a href="{% url 'catalogo:home' %}" class="flex items-center gap-2 min-h-[44px] text-gray-900 font-bold text-lg">
-                <i class="fa-solid fa-scale-balanced text-blue-700" aria-hidden="true"></i>
+            <a href="{% url 'catalogo:home' %}" class="flex items-center gap-2.5 min-h-[44px] text-ink font-serif font-semibold text-lg tracking-tight">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white">
+                    <i class="fa-solid fa-scale-balanced text-sm" aria-hidden="true"></i>
+                </span>
                 <span>Instituto de Acesso Legal</span>
             </a>
         </div>
@@ -23,9 +47,11 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-white border-t border-gray-200 mt-8">
-        <div class="max-w-3xl mx-auto px-4 py-4 text-center text-sm text-gray-800">
+    <footer class="border-t border-line mt-8">
+        <div class="max-w-3xl mx-auto px-4 py-6 text-center text-sm text-ink/70">
             Instituto de Acesso Legal &mdash; informação jurídica gratuita e em linguagem simples.
+            <br class="sm:hidden">
+            <span class="text-ink/50">Conteúdo revisado e com histórico de edições.</span>
         </div>
     </footer>
 

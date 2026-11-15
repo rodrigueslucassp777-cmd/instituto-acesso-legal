@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from simple_history.models import HistoricalRecords
 
 
 class Categoria(models.Model):
@@ -11,6 +12,7 @@ class Categoria(models.Model):
         null=True,
         help_text="Nome do ícone (ex.: Lucide 'scale' ou classe FontAwesome 'fa-scale-balanced').",
     )
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Categoria"
@@ -34,6 +36,7 @@ class Artigo(models.Model):
         help_text="Palavras separadas por vírgula, usadas pelo motor de busca."
     )
     data_atualizacao = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Artigo"

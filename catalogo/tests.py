@@ -96,6 +96,48 @@ class ArtigoDetailViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    def test_mostra_artigos_relacionados_da_mesma_categoria(self):
+        relacionado = Artigo.objects.create(
+            categoria=self.categoria,
+            titulo="Troca por defeito",
+            conteudo_simplificado="Conteúdo de exemplo.",
+            palavras_chave="troca, defeito",
+        )
+        response = self.client.get(
+            reverse("catalogo:artigo_detail", args=[self.artigo.pk])
+        )
+        self.assertContains(response, relacionado.titulo)
+
+    def test_nao_mostra_artigos_de_outra_categoria_como_relacionados(self):
+        outra_categoria = Categoria.objects.create(nome="Moradia")
+        nao_relacionado = Artigo.objects.create(
+            categoria=outra_categoria,
+            titulo="Despejo",
+            conteudo_simplificado="Conteúdo de exemplo.",
+            palavras_chave="despejo, aluguel",
+        )
+        response = self.client.get(
+            reverse("catalogo:artigo_detail", args=[self.artigo.pk])
+        )
+        self.assertNotContains(response, nao_relacionado.titulo)
+
+
+class AuditoriaHistoricoTests(TestCase):
+    def test_edicao_de_artigo_gera_registro_no_historico(self):
+        categoria = Categoria.objects.create(nome="Trabalho")
+        artigo = Artigo.objects.create(
+            categoria=categoria,
+            titulo="Hora extra",
+            conteudo_simplificado="Conteúdo de exemplo.",
+            palavras_chave="hora extra, trabalho",
+        )
+        artigo.titulo = "Hora extra remunerada"
+        artigo.save()
+
+        self.assertEqual(artigo.history.count(), 2)
+        self.assertEqual(artigo.history.earliest().titulo, "Hora extra")
+        self.assertEqual(artigo.history.latest().titulo, "Hora extra remunerada")
+
 
 class BuscaViewTests(TestCase):
     def setUp(self):

@@ -8,6 +8,7 @@ Catálogo web de direitos explicados em linguagem simples, organizados por categ
 - SQLite (padrão local) ou PostgreSQL (via variáveis de ambiente)
 - `python-decouple` para configuração via `.env`
 - `Unidecode` para busca tolerante a acentos/erros de digitação
+- `django-simple-history` para auditoria/histórico de edições de Categoria e Artigo
 
 ## Estrutura
 
@@ -47,7 +48,8 @@ No Windows, o atalho `run_server.bat` ativa a venv e já inicia o servidor.
 
 ## Funcionalidades
 
-- Listagem de categorias de direitos na home
-- Página de categoria com os artigos relacionados
-- Página de artigo com conteúdo simplificado
+- Listagem de categorias de direitos na home, com contagem de artigos por categoria
+- Página de categoria com os artigos daquela categoria
+- Página de artigo com conteúdo simplificado e sugestões de "direitos relacionados" (mesma categoria)
 - Busca por título ou palavras-chave, com fallback tolerante a acentos quando a busca direta não encontra resultados
+- Auditoria/histórico de edições: toda alteração em Categoria ou Artigo fica registrada (quem, quando, o quê) via `django-simple-history`, visível no Django admin

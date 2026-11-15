@@ -1,8 +1,10 @@
 """
 Configurações do projeto Instituto de Acesso Legal.
 """
+import os
 from pathlib import Path
 
+import dj_database_url
 from decouple import Csv, config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,6 +12,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-dev-key-trocar-em-producao")
 DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1", cast=Csv())
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
+
+# Render injeta RENDER_EXTERNAL_HOSTNAME automaticamente; usamos para liberar
+# o host e confiar a origem no CSRF sem precisar configurar isso manualmente.
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
 # Reforco de seguranca para producao (DEBUG=False). SECURE_SSL_REDIRECT fica
 # desligado por padrao para nao quebrar testes/CI/staging sem TLS proprio;
@@ -23,6 +33,10 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
+# O Render termina o TLS antes do processo da aplicacao; sem isso o Django
+# acha que a requisicao e HTTP simples e quebra cookies/CSRF marcados secure.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -30,17 +44,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "simple_history",
     "catalogo",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -63,9 +80,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# Banco de dados: PostgreSQL via variáveis de ambiente (ver .env.example).
-# Em ambiente local sem Postgres configurado, cai para SQLite automaticamente.
-if config("DB_ENGINE", default="sqlite") == "postgres":
+# Banco de dados. DATABASE_URL (ex.: connection string do Neon) tem
+# prioridade quando presente; senao cai nas variaveis DB_* (ver .env.example);
+# sem nenhuma das duas, usa SQLite local.
+if config("DATABASE_URL", default=""):
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=config("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+elif config("DB_ENGINE", default="sqlite") == "postgres":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -99,5 +125,10 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

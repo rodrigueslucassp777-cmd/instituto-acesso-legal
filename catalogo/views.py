@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, render
 from unidecode import unidecode
 
@@ -11,7 +11,7 @@ def _normalizar(texto):
 
 
 def home(request):
-    categorias = Categoria.objects.all()
+    categorias = Categoria.objects.annotate(num_artigos=Count("artigos"))
     artigos_destaque = Artigo.objects.select_related("categoria").order_by(
         "-data_atualizacao"
     )[:6]
@@ -66,4 +66,13 @@ def categoria_detail(request, pk):
 
 def artigo_detail(request, pk):
     artigo = get_object_or_404(Artigo.objects.select_related("categoria"), pk=pk)
-    return render(request, "catalogo/artigo_detail.html", {"artigo": artigo})
+    relacionados = (
+        Artigo.objects.filter(categoria=artigo.categoria)
+        .exclude(pk=artigo.pk)
+        .order_by("-data_atualizacao")[:3]
+    )
+    return render(
+        request,
+        "catalogo/artigo_detail.html",
+        {"artigo": artigo, "relacionados": relacionados},
+    )
